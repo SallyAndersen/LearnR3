@@ -106,7 +106,7 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 #' Read in one nurses' stress data file
 #'
 #' @param file_path path to a data file
-#' @param max_rows number of rows returned in the dataset
+#' @param max_rows number of rows to read
 #'
 #' @returns outputs a dataframe / tibble
 read <- function(file_path, max_rows = 100) {
@@ -133,4 +133,23 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 # Outputs all rows (`Inf` means infinity)
 here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
   read(max_rows = Inf)
+```
+
+## 17.4 Updating the function to be more robust
+```{r}
+#' Read in one nurses' stress data file
+#'
+#' @param file_path path to a data file
+#' @param max_rows number of rows to read
+#'
+#' @returns outputs a dataframe / tibble
+read <- function(file_path, max_rows = 100) {
+  data <- file_path |>
+    readr::read_csv( # tilføj readr:: for at tydeliggøre hvilken pakke funktionen kommer fra
+      show_col_types = FALSE,
+      name_repair = snakecase::to_snake_case,
+      n_max = max_rows
+    )
+  return(data)
+}
 ```
