@@ -1,15 +1,23 @@
 ---
-title: "Draft Quarto document"
-author: "Your Name"
+title: "Learning R3 intermediate"
+author: "Sally Søgaard Andersen"
 format: html
 ---
 
-## Header 1
+## Setup
 
 ```{r setup}
-#| include: false
+library(tidyverse)
+library(here)
+library(snakecase)
 ```
 
+## Importing new data
 ```{r}
-# Code chunk
+here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |>
+  read_csv(
+    show_col_types = FALSE, # printer ikke dens 'gæt' på kolonnetype
+    name_repair = to_snake_case, # gør kolonne-navne til snake_case (nemmere at læse end PascalCase)
+    n_max = 100 # bestemmer hvor mange rækker man læser ind fra filen (her 100), fx hvis man gerne vil lave noget prototype-kode hurtigt, så den ikke skal læse et kæmpe dataset ind
+  )
 ```
