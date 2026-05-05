@@ -9,147 +9,20 @@ format: html
 ```{r setup}
 library(tidyverse)
 library(here)
-library(snakecase)
+source(here("R/functions.R")) # giver os adgang til vores R-script med funktioner
 ```
 
 ## Importing new data
+
 ```{r}
+#| eval: false #gør at koden ikke kører (beholdes kun til noter ift. læring)
+
 here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |>
   read_csv(
     show_col_types = FALSE, # printer ikke dens 'gæt' på kolonnetype
     name_repair = to_snake_case, # gør kolonne-navne til snake_case (nemmere at læse end PascalCase)
     n_max = 100 # bestemmer hvor mange rækker man læser ind fra filen (her 100), fx hvis man gerne vil lave noget prototype-kode hurtigt, så den ikke skal læse et kæmpe dataset ind
   )
-```
 
-## Exercise 15.6: Reading other files
-```{r}
-here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
-  read_csv(
-    show_col_types = FALSE,
-    name_repair = to_snake_case
-  )
-```
-
-```{r}
-here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
-  read_csv(
-    show_col_types = FALSE,
-    name_repair = to_snake_case,
-    n_max = 100
-  )
-```
-
-```{r}
-here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") |>
-  read_csv(
-    show_col_types = FALSE,
-    name_repair = to_snake_case,
-    n_max = 100
-  )
-```
-
-```{r}
-here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") |>
-  read_csv(
-    show_col_types = FALSE,
-    name_repair = to_snake_case
-  )
-```
-
-## Making a function to add two numbers (with documentation (roxygen skeleton))
-```{r}
-#' Add two numbers together
-#'
-#' @param num1 A number here
-#' @param num2 A number here
-#'
-#' @returns Returns the sum of two numbers
-#'
-add_numbers <- function(num1, num2) {
-  added <- num1 + num2
-  return(added)
-}
-```
-
-## Making function to read in csv-files
-```{r}
-#' Read in one nurses' stress data file
-#'
-#' @param A path to a data file
-#'
-#' @returns outputs a dataframe / tibble
-read <- function(file_path) {
-  data <- file_path |>
-    read_csv(
-      show_col_types = FALSE,
-      name_repair = to_snake_case,
-      n_max = 100
-    )
-  return(data)
-}
-```
-
-```{r}
-here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |>
-  read()
-```
-
-```{r}
-here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
-  read()
-```
-
-## Exercise 16.7 Add another function argument to read different number of rows
-
-```{r}
-#' Read in one nurses' stress data file
-#'
-#' @param file_path path to a data file
-#' @param max_rows number of rows to read
-#'
-#' @returns outputs a dataframe / tibble
-read <- function(file_path, max_rows = 100) {
-  data <- file_path |>
-    read_csv(
-      show_col_types = FALSE,
-      name_repair = to_snake_case,
-      n_max = max_rows
-    )
-  return(data)
-}
-```
-
-## Testing read function
-```{r}
-# Outputs only 100 rows
-here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
-  read()
-
-# Outputs only 1000 rows
-here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
-  read(max_rows = 1000)
-
-# Outputs all rows (`Inf` means infinity)
-here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
-  read(max_rows = Inf)
-```
-
-## 17.4 Updating the function to be more robust
-```{r}
-#' Read in one nurses' stress data file
-#'
-#' @param file_path path to a data file
-#' @param max_rows number of rows to read
-#'
-#' @returns outputs a dataframe / tibble
-read <- function(file_path, max_rows = 100) {
-  data <- file_path |>
-    readr::read_csv( # tilføj readr:: for at tydeliggøre hvilken pakke funktionen kommer fra
-      show_col_types = FALSE,
-      name_repair = snakecase::to_snake_case,
-      n_max = max_rows
-    )
-  return(data)
-}
+# meget kodning hvis man skal skrive dette for hver fil (når der skal indlæses mange filer), så derfor har vi i stedet udarbejdet en funktion (read()), som findes under functions.R
 ```
