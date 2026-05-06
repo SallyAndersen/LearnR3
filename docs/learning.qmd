@@ -93,3 +93,45 @@ hr_data |>
 
 # har her gjort regex mere præcis og kortere kode. Opdaterer get_participant_id funktionen med denne kode i functions.R
 ```
+
+## Working with across
+
+```{r}
+hr_data <- read_all("HR.csv.gz") |>
+  get_participant_id()
+
+hr_data |> summarise(across(where(is.numeric), list(mean = mean, median = median, sd = sd))) # finder numeriske variabler i datasættet og udregner mean, median og sd
+```
+
+## Working with dates
+
+```{r}
+hr_data |>
+  mutate(
+    datetime = round_date(collection_datetime, unit = "minute"),
+    .before = collection_datetime
+  )
+```
+
+## Summarising by groups
+
+```{r}
+hr_data |>
+  mutate(
+    collection_datetime = round_date(collection_datetime, unit = "minute")
+  ) |>
+  summarise(
+    across(
+      where(is.numeric),
+      list(mean = mean, sd = sd, median = median)
+    ),
+    .by = c(id, collection_datetime)
+  ) # split data by and collection_datetime, apply summary statistics and then combine together to output new dataframe.
+# .by gør lidt det samme som groupby, det er en nyere funktion
+```
+
+## Exercise 20.6 Convert the summarising code into a function
+
+```{r}
+# here we created a code to round collecting date time and summarise the dataset. It is in functions.R
+```

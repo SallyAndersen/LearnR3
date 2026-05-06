@@ -1,15 +1,51 @@
 ---
-title: "Draft Quarto document"
-author: "Your Name"
+title: "Cleaning files"
+author: "Sally Søgaard Andersen"
 format: html
 ---
 
-## Header 1
+## Setup
 
 ```{r setup}
-#| include: false
+source(here::here("R/functions.R"))
 ```
 
+## Preparing HR data
+
 ```{r}
-# Code chunk
+hr_data <- read_all("HR.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
+```
+
+## Preparing ibi data
+
+```{r}
+ibi_data <- read_all("IBI.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
+```
+
+## Preparing temp data
+
+```{r}
+temp_data <- read_all("TEMP.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
+```
+
+## Preparing bvp data
+
+```{r}
+bvp_data <- read_all("BVP.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
+```
+
+## Preparing eda data
+
+```{r}
+eda_data <- read_all("EDA.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
 ```
