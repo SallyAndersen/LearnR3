@@ -48,3 +48,48 @@ hr_data <- read_all("HR.csv.gz")
 ibi_data <- read_all("IBI.csv.gz")
 bvp_data <- read_all("BVP.csv.gz")
 ```
+
+## Exercise 19.2 Loading the survey data
+
+```{r}
+survey_data <- here("data-raw/nurses-stress/survey-results.csv.gz") |>
+  read()
+```
+
+## Using regular expressions to extract text
+
+```{r}
+hr_data |>
+  mutate(
+    id = str_extract(
+      file_path_id,
+      pattern = "/stress/[:alnum:]{2}/" # extracts the complete match
+    ) |>
+      str_remove("/stress/") |> # fjern /stress/ fra navnet
+      str_remove("/"), # fjern / fra navnet
+    .before = file_path_id # sæt file_path_id kolonnen først
+  ) |>
+  select(-file_path_id)
+```
+
+## Exercise 19.7: convert get ID code into a function
+
+```{r}
+# we created a function called get_participant_id based on the above mentioned regex
+# It can be found in functions.R
+```
+
+## Exercise 19.8: Simplify the regex with look arounds
+```{r}
+hr_data |>
+  mutate(
+    id = str_extract(
+      file_path_id,
+      pattern = "(?<=/stress/)[:alnum:]{2}(?=/)" # finder det eksakte match
+    ),
+    .before = file_path_id # sæt file_path_id kolonnen først
+  ) |>
+  select(-file_path_id)
+
+# har her gjort regex mere præcis og kortere kode. Opdaterer get_participant_id funktionen med denne kode i functions.R
+```

@@ -28,3 +28,21 @@ read_all <- function(filename) {
     purrr::list_rbind(names_to = "file_path_id") #saml alle filer til en og tilføj en kolonne med filepathid
   return(data)
 }
+
+#' Extract ID from file path name
+#'
+#' @param dataset
+#'
+#' @returns dataset with id column
+get_participant_id <- function(data) {
+  data_with_id <- data |>
+    dplyr::mutate(
+      id = stringr::str_extract(
+        file_path_id,
+        pattern = "(?<=/stress/)[:alnum:]{2}(?=/)" # extracts the complete match
+      ),
+      .before = file_path_id
+    ) |>
+    dplyr::select(-file_path_id)
+  return(data_with_id)
+}
