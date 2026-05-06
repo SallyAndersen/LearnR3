@@ -39,7 +39,12 @@ hr_data <- hr_files |>
   list_rbind(names_to = "file_path_id") # rowbind for at samle de mange tibbles til en. Argument names_to giver ID som er lig med filepath
 ```
 
-## Exercise 18.5
+## Exercise 18.5 Convert map to function and use on sleep
 
 ```{r}
+## We made a new function called read_all, can be found under functions.R
+
+hr_data <- read_all("HR.csv.gz")
+ibi_data <- read_all("IBI.csv.gz")
+bvp_data <- read_all("BVP.csv.gz")
 ```

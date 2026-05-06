@@ -13,3 +13,18 @@ read <- function(file_path, max_rows = 10) {
     )
   return(data)
 }
+
+
+#' Read all .csv.gz files of nurses stress folder
+#'
+#' @param filename Name of the file in the sub-folders that we want to read in
+#'
+#' @returns completed dataset (single tibble)
+read_all <- function(filename) {
+  files <- here::here("data-raw/nurses-stress/stress/") |> # root mappe
+    fs::dir_ls(regexp = filename, recurse = TRUE) #alle filer med 'filename' i alle undermapper
+  data <- files |>
+    purrr::map(read) |> #brug read-funktionen på alle filer
+    purrr::list_rbind(names_to = "file_path_id") #saml alle filer til en og tilføj en kolonne med filepathid
+  return(data)
+}
