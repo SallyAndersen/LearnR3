@@ -9,6 +9,7 @@ format: html
 ```{r setup}
 library(tidyverse)
 library(here)
+library(fs)
 source(here("R/functions.R")) # giver os adgang til vores R-script med funktioner
 ```
 
@@ -25,4 +26,20 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |>
   )
 
 # meget kodning hvis man skal skrive dette for hver fil (når der skal indlæses mange filer), så derfor har vi i stedet udarbejdet en funktion (read()), som findes under functions.R
+```
+
+## Using map to make hr dataset
+
+```{r}
+hr_files <- here("data-raw/nurses-stress/stress/") |>
+  dir_ls(regexp = "HR.csv.gz", recurse = TRUE)
+
+hr_data <- hr_files |>
+  map(read) |> # ingen (), vi fortæller den at den skal bruge funktionen read, men vi skal ikke selv her aktivt bruge funktionen read()
+  list_rbind(names_to = "file_path_id") # rowbind for at samle de mange tibbles til en. Argument names_to giver ID som er lig med filepath
+```
+
+## Exercise 18.5
+
+```{r}
 ```

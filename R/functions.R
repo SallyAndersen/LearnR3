@@ -4,7 +4,7 @@
 #' @param max_rows number of rows to read
 #'
 #' @returns outputs a dataframe / tibble
-read <- function(file_path, max_rows = 100) {
+read <- function(file_path, max_rows = 10) {
   data <- file_path |>
     readr::read_csv( # tilføj readr:: for at tydeliggøre hvilken pakke funktionen kommer fra
       show_col_types = FALSE,
