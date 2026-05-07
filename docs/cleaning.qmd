@@ -7,6 +7,7 @@ format: html
 ## Setup
 
 ```{r setup}
+library(tidyverse)
 source(here::here("R/functions.R"))
 ```
 
@@ -61,4 +62,24 @@ survey_tidy <- here::here("data-raw/nurses-stress/survey-results.csv.gz") |>
 ```{r}
 survey_long <- survey_tidy |>
   survey_to_long()
+```
+
+## Joining dataset
+```{r}
+nurses_stress <- survey_long |>
+  full_join(survey_tidy) |>
+  full_join(hr_data) |>
+  full_join(eda_data) |>
+  full_join(bvp_data) |>
+  full_join(temp_data) |>
+  full_join(ibi_data)
+
+nurses_stress |>
+  arrange(id, collection_datetime) |>
+  view()
+```
+
+## writing to csv
+```{r}
+write_csv(nurses_stress, here::here("data/nurses-stress.csv"))
 ```

@@ -219,3 +219,39 @@ survey_tidy |>
 ```{r}
 # Findes i cleaning.qmd
 ```
+
+## Joining survey data to try different joins
+```{r}
+# Trying different types of data join
+survey_long |> left_join(survey_tidy)
+survey_long |> right_join(survey_tidy)
+survey_long |> full_join(survey_tidy)
+
+# manually inspecting data (finde duplikater)
+survey_tidy |>
+  count(id, datetime_id) |>
+  filter(n > 1)
+```
+## Join survey data with hr data
+```{r}
+# Loading hr data in
+hr_data <- read_all("HR.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
+```
+
+```{r}
+nurses_stress <- survey_long |>
+  full_join(survey_tidy) |>
+  full_join(hr_data)
+
+nurses_stress |>
+  arrange(id, collection_datetime) |>
+  view()
+```
+
+## Exercise 22.5: Join the rest of the data together
+```{r}
+# in the cleaning doc the dataset have been joined with the ibi data, temp data and bvp data and eda data.
+```
+
