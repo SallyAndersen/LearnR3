@@ -22,10 +22,10 @@ read <- function(file_path, max_rows = 10) {
 #' @returns completed dataset (single tibble)
 read_all <- function(filename) {
   files <- here::here("data-raw/nurses-stress/stress/") |> # root mappe
-    fs::dir_ls(regexp = filename, recurse = TRUE) #alle filer med 'filename' i alle undermapper
+    fs::dir_ls(regexp = filename, recurse = TRUE) # alle filer med 'filename' i alle undermapper
   data <- files |>
-    purrr::map(read) |> #brug read-funktionen på alle filer
-    purrr::list_rbind(names_to = "file_path_id") #saml alle filer til en og tilføj en kolonne med filepathid
+    purrr::map(read) |> # brug read-funktionen på alle filer
+    purrr::list_rbind(names_to = "file_path_id") # saml alle filer til en og tilføj en kolonne med filepathid
   return(data)
 }
 
@@ -57,7 +57,8 @@ summarise_by_datetime <- function(data) {
     dplyr::mutate(
       collection_datetime = lubridate::round_date(
         collection_datetime,
-        unit = "minute")
+        unit = "minute"
+      )
     ) |>
     dplyr::summarise(
       dplyr::across(
@@ -67,4 +68,59 @@ summarise_by_datetime <- function(data) {
       .by = c(id, collection_datetime)
     )
   return(summarised_data)
+}
+
+#' A function to read in any HR-type data
+#'
+#' @param filename that should be read in and managed
+#'
+#' @returns summarised dataset with participant id and collection datetime rounded to minutes.
+read_sensor_data <- function(filename, max_rows = 100, unit = "minute") {
+  data <- read_all(filename, max_rows = max_rows) |>
+    get_participant_id() |>
+    summarise_by_datetime()
+  return(data)
+}
+
+#' Tidying survey data
+#'
+#' @param data surveydata that needs to be tidied
+#'
+#' @returns tidied dataset
+tidy_survey_dates <- function(data) {
+  tidied <- data |>
+    dplyr::mutate(
+      date = lubridate::mdy(date),
+      start_datetime = lubridate::as_datetime(paste(date, start_time)),
+      end_datetime = lubridate::as_datetime(paste(date, end_time)),
+      datetime_id = start_datetime,
+      .before = start_time
+    ) |>
+    dplyr::select(-c(date, start_time, end_time, duration))
+  return(tidied)
+}
+
+#' Pivot survey data to long format
+#'
+#' @param data survey data to pivot longer
+#'
+#' @returns survey data pivoted longer
+survey_to_long <- function(data) {
+  data <- data |>
+    dplyr::select(id, datetime_id, start_datetime, end_datetime) |>
+    tidyr::pivot_longer(
+      c(start_datetime, end_datetime),
+      names_to = NULL,
+      values_to = "collection_datetime"
+    ) |>
+    dplyr::group_by(dplyr::pick(-collection_datetime)) |>
+    tidyr::complete(
+      collection_datetime = seq(
+        min(collection_datetime),
+        max(collection_datetime),
+        by = 60
+      )
+    ) |>
+    dplyr::ungroup()
+  return(data)
 }

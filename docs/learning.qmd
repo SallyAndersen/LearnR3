@@ -135,3 +135,87 @@ hr_data |>
 ```{r}
 # here we created a code to round collecting date time and summarise the dataset. It is in functions.R
 ```
+
+## Extra exercise 20.8 and 20.9
+
+```{r}
+#| eval: false
+#' A function to read in any HR-type data
+#'
+#' @param filename that should be read in and managed
+#'
+#' @returns summarised dataset with participant id and collection datetime rounded to minutes.
+read_sensor_data <- function(filename) {
+  data <- read.all(filename) |>
+    get_participant_id() |>
+    summarise_by_datetime()
+  return(data)
+}
+
+# you can add max_rows to chance number of rows read
+read_sensor_data <- function(filename, max_rows = 100) {
+  data <- read_all(filename, max_rows = max_rows) |>
+    get_participant_id() |>
+    summarise_by_datetime()
+  return(data)
+}
+
+# you can add units to be able to change rounding
+read_sensor <- function(filename, max_rows = 100, unit = "minute") {
+  data <- read_all(filename, max_rows = max_rows) |>
+    get_participant_id() |>
+    summarise_by_datetime(unit = unit)
+  return(data)
+}
+# denne er tilføjet til functions.R
+```
+
+## Pivot longer
+
+```{r}
+# load survey data
+survey_data <- here("data-raw/nurses-stress/survey-results.csv.gz") |>
+  read()
+survey_data
+```
+
+```{r}
+# tidying survey-data
+survey_tidy <- survey_data |>
+  mutate(
+    date = mdy(date),
+    start_datetime = as_datetime(paste(date, start_time)),
+    end_datetime = as_datetime(paste(date, end_time)),
+    datetime_id = start_datetime,
+    .before = start_time
+  ) |>
+  select(-c(date, start_time, end_time, duration))
+```
+
+```{r}
+# pivot longer
+survey_tidy |>
+  select(id, datetime_id, start_datetime, end_datetime) |>
+  pivot_longer(c(start_datetime, end_datetime), names_to = NULL, values_to = "collection_datetime") |>
+  group_by(pick(-collection_datetime)) |> # group by every other column besides collection_datetime
+  complete(collection_datetime = seq(min(collection_datetime), max(collection_datetime), by = 60)) |>
+  ungroup()
+
+# pivot longer og fylder ud så collection_datetime er fyldt med hvert minut, mhp. senere at joine med hr_data
+```
+
+## Exercise 21.4
+
+```{r}
+# made function to tidy survey data
+```
+
+```{r}
+# made function to pivot survey data longer
+```
+
+## Exercise 21.5 Add survey processing to docs/cleaning.qmd
+
+```{r}
+# Findes i cleaning.qmd
+```
